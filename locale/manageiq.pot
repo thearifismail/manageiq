@@ -6877,6 +6877,11 @@ msgid "Display notifications"
 msgstr ""
 
 #. TRANSLATORS: file: db/fixtures/miq_product_features.yml
+#: ../config/yaml_strings.rb:1486
+msgid "Display of Bottlenecks data"
+msgstr ""
+
+#. TRANSLATORS: file: db/fixtures/miq_product_features.yml
 #: ../config/yaml_strings.rb:1478
 msgid "Display of Utilization Data"
 msgstr ""
