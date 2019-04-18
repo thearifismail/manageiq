@@ -153,8 +153,8 @@ describe DialogImportService do
         allow(YAML).to receive(:load_file).with(filename).and_return(dialogs)
       end
 
-      it "defaults to DEFAULT_DIALOG_VERSION" do
-        expect(dialog_field_importer).to receive(:import_field).with(dialog_fields[0], DialogImportService::DEFAULT_DIALOG_VERSION)
+      it "defaults to version 1" do
+        expect(dialog_field_importer).to receive(:import_field).with(dialog_fields[0], 1)
         dialog_import_service.import_from_file(filename)
       end
     end
