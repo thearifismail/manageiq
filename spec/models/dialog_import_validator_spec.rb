@@ -146,9 +146,7 @@ describe DialogImportValidator do
 
     context 'when the loaded yaml has invalid version' do
       let(:dialog_with_invalid_version) do
-        left, dot, last = DialogImportService::CURRENT_DIALOG_VERSION.rpartition('.')
-        version = "#{left}#{dot}#{last.to_i + 1}" # one more than current version
-        {"label" => "Test", "dialog_tabs" => [], 'export_version' => version}
+        {"label" => "Test", "dialog_tabs" => [], 'export_version' => DialogImportService::CURRENT_DIALOG_VERSION + 1}
       end
 
       it "raises a InvalidDialogVersionError" do
