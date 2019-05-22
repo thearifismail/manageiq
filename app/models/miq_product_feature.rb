@@ -165,6 +165,9 @@ class MiqProductFeature < ApplicationRecord
     Tenant.in_my_region.all.flat_map { |t| seed_single_tenant_miq_product_features(t) }
   end
 
+  def self.seed_features(path = FIXTURE_PATH)
+    fixture_yaml = feature_yaml(path)
+
   def self.seed_features
     transaction do
       features = all.index_by(&:identifier)
