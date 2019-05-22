@@ -18,7 +18,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
     let(:src_ems) { FactoryBot.create(:ems_vmware) }
     let(:dst_ems) { FactoryBot.create(:ems_openstack, :zone => FactoryBot.create(:zone)) }
     let(:src) { FactoryBot.create(:ems_cluster, :ext_management_system => src_ems) }
-    let(:dst) { FactoryBot.create(:ems_cluster_openstack, :ext_management_system => dst_ems ) }
+    let(:dst) { FactoryBot.create(:ems_cluster_openstack, :ext_management_system => dst_ems) }
     let(:host) { FactoryBot.create(:host, :ext_management_system => FactoryBot.create(:ext_management_system, :zone => FactoryBot.create(:zone))) }
     let(:vm) { FactoryBot.create(:vm_or_template) }
     let(:vm2)  { FactoryBot.create(:vm_or_template) }
