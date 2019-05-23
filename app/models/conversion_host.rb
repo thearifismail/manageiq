@@ -283,15 +283,14 @@ class ConversionHost < ApplicationRecord
   # Collect appropriate authentication information based on the authentication type.
   #
   def miq_ssh_util_args
-    host = hostname || ipaddress
     authentication = find_credentials
     case authentication.type
     when 'AuthPrivateKey', 'AuthToken'
-      [host, authentication.userid, nil, nil, nil, { :key_data => authentication.auth_key, :passwordless_sudo => true }]
+      return [hostname || ipaddress, authentication.userid, nil, nil, nil, { :key_data => authentication.auth_key, :passwordless_sudo => true }]
     when 'AuthUseridPassword'
-      [host, authentication.userid, authentication.password, nil, nil]
+      return [hostname || ipaddress, authentication.userid, authentication.password, nil, nil]
     else
-      raise "Unsupported authentication type: #{authentication.type}"
+      raise 'Unsupported authentication type: #{authentication.type}'
     end
   end
 
