@@ -159,25 +159,19 @@ module AuthenticationMixin
     # Invoke before callback
     before_update_authentication if self.respond_to?(:before_update_authentication) && options[:save]
 
+    is_amazon = kind_of?(ManageIQ::Providers::Amazon::CloudManager)
+
     data.each_pair do |type, value|
       cred = authentication_type(type)
       current = {:new => nil, :old => nil}
 
       unless value.key?(:userid) && value[:userid].blank?
-        current[:new] = {
-          :user            => value[:userid],
-          :password        => value[:password],
-          :auth_key        => value[:auth_key],
-          :service_account => value[:service_account].presence,
-        }
+        current[:new] = {:user => value[:userid], :password => value[:password], :auth_key => value[:auth_key]}
+        current[:new][:service_account] = value[:service_account].presence if is_amazon
       end
       if cred
-        current[:old] = {
-          :user            => cred.userid,
-          :password        => cred.password,
-          :auth_key        => cred.auth_key,
-          :service_account => cred.service_account,
-        }
+        current[:old] = {:user => cred.userid, :password => cred.password, :auth_key => cred.auth_key}
+        current[:old][:service_account] = cred.service_account if is_amazon
       end
 
       # Raise an error if required fields are blank
@@ -210,10 +204,10 @@ module AuthenticationMixin
                                             :type => "AuthUseridPassword")
         end
       end
-      cred.userid          = value[:userid]
-      cred.password        = value[:password]
-      cred.auth_key        = value[:auth_key]
-      cred.service_account = value[:service_account].presence
+      cred.userid = value[:userid]
+      cred.password = value[:password]
+      cred.auth_key = value[:auth_key]
+      cred.service_account = value[:service_account].presence if is_amazon
 
       cred.save if options[:save] && id
     end
