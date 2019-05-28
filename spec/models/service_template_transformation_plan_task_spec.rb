@@ -243,7 +243,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
   context 'populated request and task' do
     let(:src_ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone)) }
-    let(:src_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => src_ems) }
+    let(:src_cluster) { FactoryBot.create(:ems_cluster, :vmware_ems) }
     let(:dst_ems) { FactoryBot.create(:ems_openstack, :zone => FactoryBot.create(:zone)) }
     let(:dst_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => dst_ems) }
 
@@ -329,11 +329,14 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
     context 'source is vmwarews' do
       let(:src_ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone)) }
-      let(:src_host) { FactoryBot.create(:host_vmware_esx, :ext_management_system => src_ems, :ipaddress => '10.0.0.1') }
-      let(:src_storage) { FactoryBot.create(:storage, :ext_management_system => src_ems, :name => 'stockage récent') }
 
-      let(:src_lan_1) { FactoryBot.create(:lan) }
-      let(:src_lan_2) { FactoryBot.create(:lan) }
+      let(:vmware_cluster) { FactoryBot.create(:ems_cluster, :vmware_ems) }
+      let(:src_host) { FactoryBot.create(:host_vmware_esx, :ems_cluster => vmware_cluster, :ext_management_system => src_ems, :ipaddress => '10.0.0.1') }
+      let(:src_storage) { FactoryBot.create(:storage, :hosts => [src_host], :name => 'stockage récent') } # ,:ext_management_system => src_ems, :name => 'stockage récent') }
+
+      let(:src_switch) { FactoryBot.create(:switch, :host => src_host) }
+      let(:src_lan_1) { FactoryBot.create(:lan, :switch => src_switch) }
+      let(:src_lan_2) { FactoryBot.create(:lan, :switch => src_switch) }
       let(:src_nic_1) { FactoryBot.create(:guest_device_nic, :lan => src_lan_1) }
       let(:src_nic_2) { FactoryBot.create(:guest_device_nic, :lan => src_lan_2) }
 
@@ -556,6 +559,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
       context 'destination is openstack' do
         let(:dst_ems) { FactoryBot.create(:ems_openstack, :api_version => 'v3', :zone => FactoryBot.create(:zone)) }
         let(:dst_cloud_tenant) { FactoryBot.create(:cloud_tenant, :name => 'fake tenant', :ext_management_system => dst_ems) }
+        let(:dst_host) { FactoryBot.build(:host_openstack_infra, :ems_cluster => dst_cloud_tenant) }
         let(:dst_cloud_volume_type) { FactoryBot.create(:cloud_volume_type) }
         let(:dst_cloud_network_1) { FactoryBot.create(:cloud_network) }
         let(:dst_cloud_network_2) { FactoryBot.create(:cloud_network) }
