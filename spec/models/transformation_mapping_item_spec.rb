@@ -48,22 +48,19 @@ RSpec.describe TransformationMappingItem, :v2v do
 
   context "source datastore validation" do
     let(:src_host) { FactoryBot.create(:host_vmware, :ems_cluster => vmware_cluster) }
-    let(:src)      { FactoryBot.create(:storage, :hosts => [src_host]) }
+    let(:src)      { FactoryBot.create(:storage_vmware, :hosts => [src_host]) }
 
-    let(:dst_host) { FactoryBot.build(:host_openstack_infra, :ems_cluster => openstack_cluster) }
-    let(:dst)      { FactoryBot.build(:storage, :hosts => [dst_host]) }
+    let(:dst_host) { FactoryBot.create(:host_openstack_infra, :ems_cluster => openstack_cluster) }
+    let(:dst)      { FactoryBot.create(:storage_nfs, :hosts => [dst_host]) }
+    # let(:dst)      { FactoryBot.create(:cloud_volume_openstack, :hosts => [dst_host]) } # does not hosts attribute for cloud_volume_openstack, so negative is tricky. Better have a validates method to check that source and destination types are the Same.
 
-    let(:valid_tmi) { FactoryBot.build(:transformation_mapping_item, :source => src, :destination => dst) }
-    let(:invalid_tmi) { FactoryBot.build(:transformation_mapping_item, :source => dst, :destination => src) }
+    before do
+      allow(vmware_cluster).to receive(:storages).and_return([src])
+    end
 
+    let(:valid_tmi) { FactoryBot.create(:transformation_mapping_item, :source => src, :destination => dst) }
     it "Source datasource is valid" do
-      expect(valid_tmi.valid?).to be true
+      expect(valid_tmi.valid?).to be(true)
     end
-
-    it "Source datasource is invalid" do
-      expect(invalid_tmi.valid?).to be false
-      expect(invalid_tmi.errors[:source].first).to match("The type of destination type must be in")
-    end
-
   end # end of context source datastore validation
 end

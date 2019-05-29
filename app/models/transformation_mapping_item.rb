@@ -38,7 +38,7 @@ class TransformationMappingItem < ApplicationRecord
 
     unless cluster_storages.include?(source_storage)
       storage_types = VALID_SOURCE_DATASTORE_TYPES.join(', ')
-      errors.add(:source, "The type of destination type must be in: #{storage_types}")
+      errors.add(:source, "The type of source type must be in: #{storage_types}")
     end
   end
 end
