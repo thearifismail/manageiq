@@ -466,7 +466,9 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
       context 'destination is rhevm' do
         let(:dst_ems) { FactoryBot.create(:ems_redhat, :zone => FactoryBot.create(:zone), :api_version => '4.2.4') }
-        let(:dst_storage) { FactoryBot.create(:storage) }
+        let(:dst_cluster_rh) { FactoryBot.create(:ems_cluster, :redhat_ems) }
+        let(:dst_host_rh) { FactoryBot.create(:host_redhat, :ems_cluster => dst_cluster_rh)}
+        let(:dst_storage) { FactoryBot.create(:storage_nfs, :hosts => [dst_host_rh]) }
         let(:dst_lan_1) { FactoryBot.create(:lan) }
         let(:dst_lan_2) { FactoryBot.create(:lan) }
         let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:host_redhat, :ext_management_system => dst_ems)) }

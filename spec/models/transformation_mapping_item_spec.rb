@@ -46,21 +46,48 @@ RSpec.describe TransformationMappingItem, :v2v do
     end
   end # of destination cluster validation
 
-  context "source datastore validation" do
+  context "datastore validation" do
     let(:src_host) { FactoryBot.create(:host_vmware, :ems_cluster => vmware_cluster) }
     let(:src)      { FactoryBot.create(:storage_vmware, :hosts => [src_host]) }
 
-    let(:dst_host) { FactoryBot.create(:host_openstack_infra, :ems_cluster => openstack_cluster) }
-    let(:dst)      { FactoryBot.create(:storage_nfs, :hosts => [dst_host]) }
-    # let(:dst)      { FactoryBot.create(:cloud_volume_openstack, :hosts => [dst_host]) } # does not hosts attribute for cloud_volume_openstack, so negative is tricky. Better have a validates method to check that source and destination types are the Same.
+    context "source validation" do
+      before do
+        allow(vmware_cluster).to receive(:storages).and_return([src])
+      end
 
-    before do
-      allow(vmware_cluster).to receive(:storages).and_return([src])
-    end
+      let(:valid_tmi_vmw) { FactoryBot.create(:transformation_mapping_item, :source => src) }
+      it "Source datasource is valid" do
+        expect(valid_tmi_vmw.valid?).to be(true)
+      end
+    end # of vmware source
 
-    let(:valid_tmi) { FactoryBot.create(:transformation_mapping_item, :source => src, :destination => dst) }
-    it "Source datasource is valid" do
-      expect(valid_tmi.valid?).to be(true)
-    end
-  end # end of context source datastore validation
+    context "destination validation" do
+      context "openstack" do
+        let(:dst_host_ops) { FactoryBot.create(:host_openstack_infra, :ems_cluster => openstack_cluster) }
+        let(:dst_ops)      { FactoryBot.create(:storage_nfs, :hosts => [dst_host_ops]) }
+
+        before do
+          allow(openstack_cluster).to receive(:storages).and_return([dst_ops])
+        end
+
+        let(:valid_tmi_ops) { FactoryBot.create(:transformation_mapping_item, :destination => dst_ops) }
+        it "openstack destination datasource is valid" do
+          expect(valid_tmi_ops.valid?).to be(true)
+        end
+      end # of openstack destination
+
+      context "redhat" do
+        let(:dst_host_rh) { FactoryBot.create(:host_redhat, :ems_cluster => redhat_cluster) }
+        let(:dst_rh)      { FactoryBot.create(:storage_nfs, :hosts => [dst_host_rh]) }
+        before do
+          allow(redhat_cluster).to receive(:storages).and_return([dst_rh])
+        end
+
+        let(:valid_tmi_rh) { FactoryBot.create(:transformation_mapping_item, :destination => dst_rh) }
+        it "redhat destination datasource is valid" do
+          expect(valid_tmi_rh.valid?).to be(true)
+        end
+      end # redhat destination
+    end # destination datatore validation
+  end # of datastore context
 end
