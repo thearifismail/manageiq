@@ -49,9 +49,18 @@ class TransformationMappingItem < ApplicationRecord
   def destination_datastore
     destionation_storage = destination
 
-    dst_storages = destination.hosts # Get hosts using this source storage
-                             .collect(&:ems_cluster) # How many clusters does each host has
-                             .collect(&:storages).flatten # How many storages each host is mapped to that belong to the cluster
+    if destination.kind_of?(Storage) # red hat
+      dst_storages = destination.hosts
+                                .collect(&:ems_cluster)
+                                .collect(&:storages).flatten
+
+    elsif destination.kind_of?(CloudVolume) # Openstack
+      dst_storages = destination.cloud_tenant.cloud_volumes
+
+    else
+      dst_storages = nil # no storages found
+
+    end
 
     unless dst_storages.include?(destionation_storage)
       storage_types = VALID_DESTINATION_DATASTORE_TYPES.join(', ')

@@ -63,14 +63,12 @@ RSpec.describe TransformationMappingItem, :v2v do
 
     context "destination validation" do
       context "openstack" do
-        let(:dst_host_ops) { FactoryBot.create(:host_openstack_infra, :ems_cluster => openstack_cluster) }
-        let(:dst_ops)      { FactoryBot.create(:storage_nfs, :hosts => [dst_host_ops]) }
+        let(:ems) { FactoryBot.create(:ems_openstack) }
+        let(:disk) { FactoryBot.create(:disk) }
+        let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+        let(:cloud_volume_openstack) {FactoryBot.create(:cloud_volume_openstack, :attachments => [disk], :cloud_tenant => cloud_tenant) }
+        let(:valid_tmi_ops) { FactoryBot.create(:transformation_mapping_item, :destination => cloud_volume_openstack) }
 
-        before do
-          allow(openstack_cluster).to receive(:storages).and_return([dst_ops])
-        end
-
-        let(:valid_tmi_ops) { FactoryBot.create(:transformation_mapping_item, :destination => dst_ops) }
         it "openstack destination datasource is valid" do
           expect(valid_tmi_ops.valid?).to be(true)
         end
