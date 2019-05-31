@@ -10,7 +10,7 @@ RSpec.describe TransformationMappingItem, :v2v do
 
   context "source cluster validation" do
     let(:valid_mapping_item) do
-      FactoryBot.build(:transformation_mapping_item, :source => vmware_cluster, :destination => openstack_cluster)
+      FactoryBot.create(:transformation_mapping_item, :source => vmware_cluster, :destination => openstack_cluster)
     end
 
     let(:invalid_mapping_item) do
@@ -29,7 +29,7 @@ RSpec.describe TransformationMappingItem, :v2v do
 
   context "destination cluster validation" do
     let(:valid_mapping_item) do
-      FactoryBot.build(:transformation_mapping_item, :source => vmware_cluster, :destination => redhat_cluster)
+      FactoryBot.create(:transformation_mapping_item, :source => vmware_cluster, :destination => redhat_cluster)
     end
 
     let(:invalid_mapping_item) do
