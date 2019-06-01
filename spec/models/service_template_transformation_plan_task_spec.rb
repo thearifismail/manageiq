@@ -243,11 +243,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
   context 'populated request and task' do
     let(:src_ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone)) }
-<<<<<<< HEAD
-    let(:src_cluster) { FactoryBot.create(:ems_cluster, :vmware_ems) }
-=======
     let(:src_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => src_ems) }
->>>>>>> master
     let(:dst_ems) { FactoryBot.create(:ems_openstack, :zone => FactoryBot.create(:zone)) }
     let(:dst_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => dst_ems) }
 
@@ -334,7 +330,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
     context 'source is vmwarews' do
       let(:src_ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone)) }
 
-      let(:vmware_cluster) { FactoryBot.create(:ems_cluster, :vmware_ems) }
+      let(:vmware_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => src_ems) }
       let(:src_host) { FactoryBot.create(:host_vmware_esx, :ems_cluster => vmware_cluster, :ext_management_system => src_ems, :ipaddress => '10.0.0.1') }
       let(:src_storage) { FactoryBot.create(:storage, :hosts => [src_host], :name => 'stockage récent') } # ,:ext_management_system => src_ems, :name => 'stockage récent') }
 
@@ -470,7 +466,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
       context 'destination is rhevm' do
         let(:dst_ems) { FactoryBot.create(:ems_redhat, :zone => FactoryBot.create(:zone), :api_version => '4.2.4') }
-        let(:dst_cluster_rh) { FactoryBot.create(:ems_cluster, :redhat_ems) }
+        let(:dst_cluster_rh) { FactoryBot.create(:ems_cluster, :ext_management_system => dst_ems) }
         let(:dst_host_rh) { FactoryBot.create(:host_redhat, :ems_cluster => dst_cluster_rh)}
         let(:dst_storage) { FactoryBot.create(:storage_nfs, :hosts => [dst_host_rh]) }
         let(:dst_lan_1) { FactoryBot.create(:lan) }
