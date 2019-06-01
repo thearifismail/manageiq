@@ -3,7 +3,6 @@ class TransformationMappingItem < ApplicationRecord
   belongs_to :source,      :polymorphic => true
   belongs_to :destination, :polymorphic => true
 
-<<<<<<< HEAD
   validates :source_id, :uniqueness => {:scope => [:transformation_mapping_id, :source_type, :destination_type]}
 
   # todo provide a validate method to verify that source and destion are of the same type but different IDs
@@ -13,22 +12,13 @@ class TransformationMappingItem < ApplicationRecord
 
   validate :source_datastore,    :if => -> { source.kind_of?(Storage) }
   validate :destination_datastore,    :if => -> { destination.kind_of?(Storage) || destination.kind_of?(CloudVolume) }
-=======
-  validates :source_id, :uniqueness => {:scope => [:transformation_mapping_id, :source_type]}
-
-  validate :source_cluster,      :if => -> { source.kind_of?(EmsCluster) }
-  validate :destination_cluster, :if => -> { source.kind_of?(EmsCluster) || source.kind_of?(CloudTenant) }
->>>>>>> master
 
   VALID_SOURCE_CLUSTER_PROVIDERS = %w[vmwarews].freeze
   VALID_DESTINATION_CLUSTER_PROVIDERS = %w[rhevm openstack].freeze
 
-<<<<<<< HEAD
   VALID_SOURCE_DATASTORE_TYPES      = %w[Storage].freeze
   VALID_DESTINATION_DATASTORE_TYPES      = %w[Storage CloudVolume].freeze
 
-=======
->>>>>>> master
   def source_cluster
     unless VALID_SOURCE_CLUSTER_PROVIDERS.include?(source.ext_management_system.emstype)
       source_types = VALID_SOURCE_CLUSTER_PROVIDERS.join(', ')
@@ -42,7 +32,6 @@ class TransformationMappingItem < ApplicationRecord
       errors.add(:destination, "EMS type of destination cluster or cloud tenant must be in: #{destination_types}")
     end
   end
-<<<<<<< HEAD
 
   def source_datastore
     source_storage = source
@@ -78,6 +67,4 @@ class TransformationMappingItem < ApplicationRecord
       errors.add(:destination, "Destination type must be in: #{storage_types}")
     end
   end
-=======
->>>>>>> master
 end
