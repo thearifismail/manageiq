@@ -1,5 +1,4 @@
 RSpec.describe TransformationMappingItem, :v2v do
-<<<<<<< HEAD
   let(:ems_vmware) { FactoryBot.create(:ems_vmware) }
   let(:vmware_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => ems_vmware) }
 
@@ -12,15 +11,6 @@ RSpec.describe TransformationMappingItem, :v2v do
   context "source cluster validation" do
     let(:valid_mapping_item) do
       FactoryBot.create(:transformation_mapping_item, :source => vmware_cluster, :destination => openstack_cluster)
-=======
-  let(:vmware_cluster) { FactoryBot.create(:ems_cluster, :vmware_ems) }
-  let(:redhat_cluster) { FactoryBot.create(:ems_cluster, :redhat_ems) }
-  let(:openstack_cluster) { FactoryBot.create(:ems_cluster_openstack, :openstack_ems) }
-
-  context "source cluster validation" do
-    let(:valid_mapping_item) do
-      FactoryBot.build(:transformation_mapping_item, :source => vmware_cluster, :destination => openstack_cluster)
->>>>>>> master
     end
 
     let(:invalid_mapping_item) do
@@ -35,19 +25,11 @@ RSpec.describe TransformationMappingItem, :v2v do
       expect(invalid_mapping_item.valid?).to be false
       expect(invalid_mapping_item.errors[:source].first).to match("EMS type of source cluster must be in")
     end
-<<<<<<< HEAD
   end # of source cluster validation
 
   context "destination cluster validation" do
     let(:valid_mapping_item) do
       FactoryBot.create(:transformation_mapping_item, :source => vmware_cluster, :destination => redhat_cluster)
-=======
-  end
-
-  context "destination cluster validation" do
-    let(:valid_mapping_item) do
-      FactoryBot.build(:transformation_mapping_item, :source => vmware_cluster, :destination => redhat_cluster)
->>>>>>> master
     end
 
     let(:invalid_mapping_item) do
@@ -62,7 +44,6 @@ RSpec.describe TransformationMappingItem, :v2v do
       expect(invalid_mapping_item.valid?).to be false
       expect(invalid_mapping_item.errors[:destination].first).to match("EMS type of destination cluster or cloud tenant must be in")
     end
-<<<<<<< HEAD
   end # of destination cluster validation
 
   context "datastore validation" do
@@ -107,7 +88,4 @@ RSpec.describe TransformationMappingItem, :v2v do
       end # redhat destination
     end # destination datatore validation
   end # of datastore context
-=======
-  end
->>>>>>> master
 end
