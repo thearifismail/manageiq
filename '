@@ -53,6 +53,7 @@ RSpec.describe TransformationMappingItem, :v2v do
     let(:ems) { FactoryBot.create(:ems_openstack) }
     let(:disk) { FactoryBot.create(:disk) }
     let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+    #let(:cloud_volume_openstack) {FactoryBot.create(:cloud_volume_openstack, :attachments => [disk], :cloud_tenant => cloud_tenant) }
     let(:cloud_volume_openstack) {FactoryBot.create(:cloud_volume_openstack, :attachments => [disk], :cloud_tenant => cloud_tenant) }
 
     before do
@@ -61,10 +62,7 @@ RSpec.describe TransformationMappingItem, :v2v do
 
     context "source validation" do
       let(:valid_tmi_vmw) { FactoryBot.create(:transformation_mapping_item, :source => src, :destination => cloud_volume_openstack) }
-      let(:invalid_tmi_vmw) { FactoryBot.build(:transformation_mapping_item, :source => cloud_volume_openstack, :destination => cloud_volume_openstack) }
-
-      # Arif delete me
-      require 'PP'
+      let(:invalid_tmi_vmw) { FactoryBot.build(:transformation_mapping_item, :source => cloud_volume_openstack, :destination => src) }
 
       it "Source datasource is valid" do
         expect(valid_tmi_vmw.valid?).to be(true)
@@ -76,10 +74,14 @@ RSpec.describe TransformationMappingItem, :v2v do
     end # of vmware source
 
     context "destination validation" do
-      context "valid destination" do
-        let(:valid_tmi_ops) { FactoryBot.create(:transformation_mapping_item, :source => src, :destination => cloud_volume_openstack) }
+      context "openstack" do
+        # let(:ems) { FactoryBot.create(:ems_openstack) }
+        # let(:disk) { FactoryBot.create(:disk) }
+        # let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+        # let(:cloud_volume_openstack) {FactoryBot.create(:cloud_volume_openstack, :attachments => [disk], :cloud_tenant => cloud_tenant) }
+        let(:valid_tmi_ops) { FactoryBot.create(:transformation_mapping_item, :destination => cloud_volume_openstack) }
 
-        it "openstack is valid" do
+        it "openstack destination datasource is valid" do
           expect(valid_tmi_ops.valid?).to be(true)
         end
       end # of openstack destination
@@ -91,7 +93,7 @@ RSpec.describe TransformationMappingItem, :v2v do
           allow(redhat_cluster).to receive(:storages).and_return([dst_rh])
         end
 
-        let(:valid_tmi_rh) { FactoryBot.create(:transformation_mapping_item, :source => src, :destination => dst_rh) }
+        let(:valid_tmi_rh) { FactoryBot.create(:transformation_mapping_item, :destination => dst_rh) }
         it "redhat destination datasource is valid" do
           expect(valid_tmi_rh.valid?).to be(true)
         end

@@ -4,8 +4,7 @@ class TransformationMappingItem < ApplicationRecord
   belongs_to :destination, :polymorphic => true
 
   validates :source_id, :uniqueness => {:scope => [:transformation_mapping_id, :source_type, :destination_type]}
-
-  # todo provide a validate method to verify that source and destion are of the same type but different IDs
+  validates :source_type, :inclusion => { :in => %w[EmsCluster Storage Lan] }
 
   validate :source_cluster,      :if => -> { source.kind_of?(EmsCluster) }
   validate :destination_cluster, :if => -> { destination.kind_of?(EmsCluster) || destination.kind_of?(CloudTenant) }
