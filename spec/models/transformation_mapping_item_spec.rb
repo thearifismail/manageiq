@@ -63,9 +63,6 @@ RSpec.describe TransformationMappingItem, :v2v do
       let(:valid_tmi_vmw) { FactoryBot.create(:transformation_mapping_item, :source => src, :destination => cloud_volume_openstack) }
       let(:invalid_tmi_vmw) { FactoryBot.build(:transformation_mapping_item, :source => cloud_volume_openstack, :destination => cloud_volume_openstack) }
 
-      # Arif delete me
-      require 'PP'
-
       it "Source datasource is valid" do
         expect(valid_tmi_vmw.valid?).to be(true)
       end
