@@ -3,8 +3,8 @@ class TransformationMappingItem < ApplicationRecord
   belongs_to :source,      :polymorphic => true
   belongs_to :destination, :polymorphic => true
 
-  validates :source_id, :uniqueness => {:scope => [:transformation_mapping_id, :source_type, :destination_type]}
-  validates :source_type, :inclusion => { :in => %w[EmsCluster Storage Lan] }
+  validates :source_id, :uniqueness => {:scope => [:transformation_mapping_id, :source_type, :destination_type] }
+  # validates :source_type, :inclusion => { :in => %w[EmsCluster Storage Lan] }
 
   validate :source_cluster,      :if => -> { source.kind_of?(EmsCluster) }
   validate :destination_cluster, :if => -> { destination.kind_of?(EmsCluster) || destination.kind_of?(CloudTenant) }
@@ -12,11 +12,25 @@ class TransformationMappingItem < ApplicationRecord
   validate :source_datastore,    :if => -> { source.kind_of?(Storage) }
   validate :destination_datastore,    :if => -> { destination.kind_of?(Storage) || destination.kind_of?(CloudVolume) }
 
+
+
+  validate :source_network,      :if => -> {source.kind_of?(Lan) }
+  # validate :destination_network, :if => -> { destination.kind_of?(Lan) || destination.kind_of?(CloudNetwork) }
+
+
+
   VALID_SOURCE_CLUSTER_PROVIDERS = %w[vmwarews].freeze
   VALID_DESTINATION_CLUSTER_PROVIDERS = %w[rhevm openstack].freeze
 
   VALID_SOURCE_DATASTORE_TYPES      = %w[Storage].freeze
   VALID_DESTINATION_DATASTORE_TYPES      = %w[Storage CloudVolume].freeze
+
+
+
+  VALID_SOURCE_NETWORK_TYPES        = %w[Lan].freeze
+  VALID_DESTINATION_NETWORK_TYPES   = %w[Lan CloudNetwork].freeze
+
+
 
   def source_cluster
     unless VALID_SOURCE_CLUSTER_PROVIDERS.include?(source.ext_management_system.emstype)
@@ -66,4 +80,42 @@ class TransformationMappingItem < ApplicationRecord
       errors.add(:destination, "Destination type must be in: #{storage_types}")
     end
   end
+
+  # Verify that Network type is LAN and belongs the source cluster .
+  #
+  def source_network
+    source_lan       = source
+    ems_cluster_lans = source_lan.switch.host.ems_cluster.lans.flatten
+    logger.info("******* source_cluster_lans: " + ems_cluster_lans.inspect)
+    logger.info("******* source_cluster_lans_count: " + ems_cluster_lans.count.to_s)
+
+    unless ems_cluster_lans.include?(source_lan)
+      network_types = VALID_SOURCE_NETWORK_TYPES.join(', ')
+      errors.add(:network_types, "The network type must be in: #{network_types}")
+    end
+  end # of source_network
+# =begin
+  # Verify that Network type is LAN or CloudNetwork and belongs the destination cluster.
+  #
+  def destination_network
+    destination_lan = destination
+
+    if destination.kind_of?(Lan) # redhat
+      lans = destination_lan.switch.host.ems_cluster.lans.flatten
+      logger.info("******* destination_cluster_lans: " + lans.inspect)
+      logger.info("******* destination_cluster_lans_count: " + lans.count.to_s)
+    elsif
+      lans =  destination.cloud_tenant.cloud_networks
+    else
+      lan = nil
+    end
+
+    unless lans.include?(destination_lan)
+      network_types = VALID_SOURCE_NETWORK_TYPES.join(', ')
+      errors.add(:network_types, "The network type must be in: #{network_types}")
+    end
+  end # of destination_network
+# =end
+
+
 end

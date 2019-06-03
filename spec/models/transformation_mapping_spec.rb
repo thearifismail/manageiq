@@ -36,13 +36,18 @@ RSpec.describe TransformationMapping, :v2v do
     let(:vm2) { FactoryBot.create(:vm_vmware, :ems_cluster => src, :ext_management_system => FactoryBot.create(:ext_management_system)) }
     let(:inactive_vm) { FactoryBot.create(:vm_vmware, :name => 'test_vm_inactive', :ems_cluster => src, :ext_management_system => nil) }
     let(:storage) { FactoryBot.create(:storage) }
-    let(:lan) { FactoryBot.create(:lan) }
+    let(:src_host) { FactoryBot.create(:host, :ems_cluster => src) }
+    let(:src_switch) { FactoryBot.create(:switch, :host => src_host) }
+    let(:lan) { FactoryBot.create(:lan, :switch => src_switch) }
+    # let(:lan) { FactoryBot.create(:lan) }
+    # let(:nic) { FactoryBot.create(:guest_device_nic, :lan => lan) }
     let(:nic) { FactoryBot.create(:guest_device_nic, :lan => lan) }
 
     before do
       mapping.transformation_mapping_items << TransformationMappingItem.new(:source => storage, :destination => storage)
       mapping.transformation_mapping_items << TransformationMappingItem.new(:source => lan, :destination => lan)
       vm.storages << storage
+      vm.lans << storage
       vm.hardware = FactoryBot.create(:hardware, :guest_devices => [nic])
     end
 
