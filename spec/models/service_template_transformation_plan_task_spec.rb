@@ -329,11 +329,14 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
     context 'source is vmwarews' do
       let(:src_ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone)) }
-      let(:src_host) { FactoryBot.create(:host_vmware_esx, :ext_management_system => src_ems, :ipaddress => '10.0.0.1') }
-      let(:src_storage) { FactoryBot.create(:storage, :ext_management_system => src_ems, :name => 'stockage récent') }
 
-      let(:src_lan_1) { FactoryBot.create(:lan) }
-      let(:src_lan_2) { FactoryBot.create(:lan) }
+      let(:vmware_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => src_ems) }
+      let(:src_host) { FactoryBot.create(:host_vmware_esx, :ems_cluster => vmware_cluster, :ext_management_system => src_ems, :ipaddress => '10.0.0.1') }
+      let(:src_storage) { FactoryBot.create(:storage, :hosts => [src_host], :name => 'stockage récent') } # ,:ext_management_system => src_ems, :name => 'stockage récent') }
+
+      let(:src_switch) { FactoryBot.create(:switch, :host => src_host) }
+      let(:src_lan_1) { FactoryBot.create(:lan, :switch => src_switch) }
+      let(:src_lan_2) { FactoryBot.create(:lan, :switch => src_switch) }
       let(:src_nic_1) { FactoryBot.create(:guest_device_nic, :lan => src_lan_1) }
       let(:src_nic_2) { FactoryBot.create(:guest_device_nic, :lan => src_lan_2) }
 
@@ -463,9 +466,12 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
       context 'destination is rhevm' do
         let(:dst_ems) { FactoryBot.create(:ems_redhat, :zone => FactoryBot.create(:zone), :api_version => '4.2.4') }
-        let(:dst_storage) { FactoryBot.create(:storage) }
-        let(:dst_lan_1) { FactoryBot.create(:lan) }
-        let(:dst_lan_2) { FactoryBot.create(:lan) }
+        let(:dst_cluster_rh) { FactoryBot.create(:ems_cluster, :ext_management_system => dst_ems) }
+        let(:dst_host_rh) { FactoryBot.create(:host_redhat, :ems_cluster => dst_cluster_rh)}
+        let(:dst_storage) { FactoryBot.create(:storage_nfs, :hosts => [dst_host_rh]) }
+        let(:dst_switch) { FactoryBot.create(:switch, :host => dst_host_rh) }
+        let(:dst_lan_1) { FactoryBot.create(:lan, :switch => dst_switch) }
+        let(:dst_lan_2) { FactoryBot.create(:lan, :switch => dst_switch) }
         let(:conversion_host) { FactoryBot.create(:conversion_host, :resource => FactoryBot.create(:host_redhat, :ext_management_system => dst_ems)) }
 
         let(:mapping) do
@@ -556,9 +562,12 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
       context 'destination is openstack' do
         let(:dst_ems) { FactoryBot.create(:ems_openstack, :api_version => 'v3', :zone => FactoryBot.create(:zone)) }
         let(:dst_cloud_tenant) { FactoryBot.create(:cloud_tenant, :name => 'fake tenant', :ext_management_system => dst_ems) }
-        let(:dst_cloud_volume_type) { FactoryBot.create(:cloud_volume_type) }
-        let(:dst_cloud_network_1) { FactoryBot.create(:cloud_network) }
-        let(:dst_cloud_network_2) { FactoryBot.create(:cloud_network) }
+        let(:dst_host) { FactoryBot.build(:host_openstack_infra, :ems_cluster => dst_cloud_tenant) }
+        # let(:dst_cloud_volume_type) { FactoryBot.create(:cloud_volume_type) }
+        let(:disk) { FactoryBot.create(:disk) }
+        let(:dst_cloud_volume_type) { FactoryBot.create(:cloud_volume_openstack, :attachments => [disk], :cloud_tenant => dst_cloud_tenant) }
+        let(:dst_cloud_network_1) { FactoryBot.create(:cloud_network, :cloud_tenant => dst_cloud_tenant) }
+        let(:dst_cloud_network_2) { FactoryBot.create(:cloud_network, :cloud_tenant => dst_cloud_tenant) }
         let(:dst_flavor) { FactoryBot.create(:flavor) }
         let(:dst_security_group) { FactoryBot.create(:security_group) }
         let(:conversion_host_vm) { FactoryBot.create(:vm_openstack, :ext_management_system => dst_ems, :cloud_tenant => dst_cloud_tenant) }
