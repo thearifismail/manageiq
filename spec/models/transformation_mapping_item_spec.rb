@@ -106,35 +106,44 @@ RSpec.describe TransformationMappingItem, :v2v do
     # 3. Add host to a switch
     # 4. Add switch to the lan
 
+    # source can be vmware only
     let(:source_cluster) { FactoryBot.create(:ems_cluster) }
     let(:source_host) { FactoryBot.create(:host, :ems_cluster => source_cluster) }
     let(:source_switch) { FactoryBot.create(:switch, :host => source_host) }
     let(:source_lan) { FactoryBot.create(:lan, :switch => source_switch) }
 
-    let(:destination_cluster) { FactoryBot.create(:ems_cluster) }
-    let(:destination_host) { FactoryBot.create(:host, :ems_cluster => destination_cluster) }
-    let(:destination_switch) { FactoryBot.create(:switch, :host => destination_host) }
-    let(:destination_lan) { FactoryBot.create(:lan, :switch => destination_switch) }
+    # destination Red Hat (rhev)
+    let(:rh_host) { FactoryBot.create(:host, :ems_cluster => redhat_cluster) } # redhat_cluster defined near the top
+    let(:rh_switch) { FactoryBot.create(:switch, :host => rh_host) }
+    let(:rh_lan) { FactoryBot.create(:lan, :switch => rh_switch) }
+    let(:tmi_rh) { FactoryBot.create(:transformation_mapping_item, :source => source_lan, :destination => rh_lan) }
 
-    let(:tmi) { FactoryBot.create(:transformation_mapping_item, :source => source_lan, :destination => destination_lan) }
+    # destination openstack (ops)
+    let(:ems) { FactoryBot.create(:ems_openstack) }
+    let(:cloud_tenant) { FactoryBot.create(:cloud_tenant_openstack, :ext_management_system => ems) }
+    let(:cloud_network_openstack) {FactoryBot.create(:cloud_network_openstack,:cloud_tenant => cloud_tenant) }
+    let(:tmi_ops) { FactoryBot.create(:transformation_mapping_item, :source => source_lan, :destination => cloud_network_openstack) }
+
+    # invalid source
+    let(:invalid_tmi_rh) { FactoryBot.build(:transformation_mapping_item, :source => cloud_network_openstack, :destination => source_lan) }
 
     before do
       allow(source_cluster).to receive(:lans).and_return([source_lan])
+      allow(redhat_cluster).to receive(:lans).and_return([rh_lan])
     end
 
     it "Source is valid" do
-      expect(tmi).to be_valid
+      expect(tmi_rh).to be_valid
     end
 
-    before do
-      allow(destination_cluster).to receive(:lans).and_return([destination_lan])
+    it "Source is invalid" do
+      expect(invalid_tmi_rh).to be_invalid
     end
+
+    # destination openstack
     it "Destination is valid" do
-      expect(tmi).to be_valid
+      expect(tmi_ops).to be_valid
     end
+
   end # end of lan context
-
-
-
-
 end
