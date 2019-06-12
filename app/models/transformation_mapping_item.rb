@@ -86,15 +86,13 @@ class TransformationMappingItem < ApplicationRecord
   def source_network
     source_lan       = source
     ems_cluster_lans = source_lan.switch.host.ems_cluster.lans.flatten
-    logger.info("******* source_cluster_lans: " + ems_cluster_lans.inspect)
-    logger.info("******* source_cluster_lans_count: " + ems_cluster_lans.count.to_s)
 
     unless ems_cluster_lans.include?(source_lan)
       network_types = VALID_SOURCE_NETWORK_TYPES.join(', ')
       errors.add(:network_types, "The network type must be in: #{network_types}")
     end
   end # of source_network
-# =begin
+
   # Verify that Network type is LAN or CloudNetwork and belongs the destination cluster.
   #
   def destination_network
@@ -102,8 +100,6 @@ class TransformationMappingItem < ApplicationRecord
 
     if destination.kind_of?(Lan) # redhat
       lans = destination_lan.switch.host.ems_cluster.lans.flatten
-      logger.info("******* destination_cluster_lans: " + lans.inspect)
-      logger.info("******* destination_cluster_lans_count: " + lans.count.to_s)
     elsif
       lans =  destination.cloud_tenant.cloud_networks
     else
@@ -115,7 +111,4 @@ class TransformationMappingItem < ApplicationRecord
       errors.add(:network_types, "The network type must be in: #{network_types}")
     end
   end # of destination_network
-# =end
-
-
 end

@@ -100,7 +100,7 @@ RSpec.describe TransformationMappingItem, :v2v do
   # Lan validations
   # ---------------------------------------------------------------------------
   context "Lan validation" do
-    # todo
+    # Steps to verify Lan
     # 1. Create a cluster
     # 2. Add cluster to a host
     # 3. Add host to a switch
