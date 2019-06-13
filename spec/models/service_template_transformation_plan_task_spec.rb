@@ -1,4 +1,3 @@
-# filename : newtest_by_arif.rb
 RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
   let(:infra_conversion_job) { FactoryBot.create(:infra_conversion_job) }
 
@@ -90,14 +89,16 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
         task.task_active
         expect(plan.vm_resources.find_by(:resource => task.source).status).to eq(ServiceResource::STATUS_ACTIVE)
       end
-    end # of 'task_active'
+    end
+    # of 'task_active'
 
     describe 'task_finished' do
       it 'sets vm_request status to Completed' do
         task.task_finished
         expect(plan.vm_resources.find_by(:resource => task.source).status).to eq(ServiceResource::STATUS_COMPLETED)
       end
-    end # of 'task_finished'
+    end
+    # of 'task_finished'
 
     describe '.get_description' do
       it 'describes a task' do
@@ -107,7 +108,8 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
       it 'describes a request' do
         expect(described_class.get_description(request)).to eq(plan.name)
       end
-    end # of '.get_description'
+    end
+    # of '.get_description'
 
     describe '#transformation_log_queue' do
       context 'when conversion host exists' do
@@ -157,7 +159,8 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           )
         end
       end
-    end # of describe '#transformation_log_queue'
+    end
+    # of describe '#transformation_log_queue'
 
     describe '#transformation_log' do
       before do
@@ -239,10 +242,11 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
         expect(conversion_host).to receive(:kill_process).with('1234', 'KILL').and_return(true)
         expect(task.kill_virtv2v('KILL')).to eq(true)
       end
-    end # of #kill_virtv2v
+    end
+    # of #kill_virtv2v
 
-
-  end # of context 'independent of provider'
+  end
+  # of context 'independent of provider'
 
   context 'populated request and task' do
     let(:src_ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone)) }
@@ -332,7 +336,6 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
     end
 
     context 'source is vmwarews' do
-    # let(:dst_ems) { FactoryBot.create(:ems_openstack, :zone => FactoryBot.create(:zone)) }
 
         # cluster params
         let(:ems_redhat) { FactoryBot.create(:ems_redhat) }
@@ -341,7 +344,6 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
         let(:openstack_cluster) { FactoryBot.create(:ems_cluster_openstack, :ext_management_system => ems_openstack) }
 
         # datastore validation
-        # let(:src_host) { FactoryBot.create(:host_vmware, :ems_cluster => src_cluster) }
         let(:src_host) { FactoryBot.create(:host_vmware, :ems_cluster => src_cluster, :ipaddress => '10.0.0.1') }
         let(:src_storage)  { FactoryBot.create(:storage_vmware, :hosts => [src_host], :name => 'stockage récent') }
         let(:dst_host_rh) { FactoryBot.create(:host_redhat, :ems_cluster => redhat_cluster) }
@@ -390,7 +392,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
         end
 
         let(:mapping) do
-          FactoryBot.create( # Arif: barfing line
+          FactoryBot.create(
             :transformation_mapping,
             :transformation_mapping_items => [ tmi_cluster, tmi_storage, tmi_lan_1, tmi_lan_2 ]
           )
@@ -421,9 +423,8 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           allow(src_host).to receive(:thumbprint_sha1).and_return('01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67')
           allow(src_host).to receive(:authentication_userid).and_return('esx_user')
           allow(src_host).to receive(:authentication_password).and_return('esx_passwd')
-          task_1.options[:transformation_host_id] = conversion_host.id # Arif: barfing line
+          task_1.options[:transformation_host_id] = conversion_host.id
           allow(task_1).to receive(:with_lock).and_yield
-          # allow(src_cluster).to receive(:lans).and_return([src_lan_1, src_lan_2]) # Arif's addition
         end
 
         it "fails when cluster is not mapped" do
@@ -438,7 +439,6 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
 
         # to todo : fix it.
         it 'find the destination ems based on mapping' do
-          # expect(task_1.destination_ems).to eq(dst_ems)
           expect(task_1.destination_ems).to eq(ems_redhat)
         end
 
@@ -515,10 +515,11 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           expect(task_1.options[:virtv2v_message]).to be_nil
         end
 
-      end # shared_examples_for "get_conversion_state"
+      end
+      # shared_examples_for "get_conversion_state"
 
       shared_examples_for "#virtv2v_disks" do
-        it "checks mapping and generates virtv2v_disks hash" do # Arif: failing test
+        it "checks mapping and generates virtv2v_disks hash" do
           expect(task_1.virtv2v_disks).to eq(
             [
               { :path => src_disk_1.filename, :size => src_disk_1.size, :percent => 0, :weight  => 50.0 },
@@ -534,13 +535,12 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           task_1.conversion_host = conversion_host
         end
 
-        # it { expect(task_1.destination_cluster).to eq(dst_cluster) }
         it { expect(task_1.destination_cluster).to eq(redhat_cluster) }
 
         it_behaves_like "#virtv2v_disks"
 
         context "#network_mappings" do
-          it "generates network_mappings hash" do  # Arif: failing test
+          it "generates network_mappings hash" do
             expect(task_1.network_mappings).to eq(
               [
                 { :source => source_lan_1.name, :destination => rh_lan_1.name, :mac_address => src_nic_1.address, :ip_address => '10.0.1.1' },
@@ -548,9 +548,10 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
               ]
             )
           end
-        end # of context '#network_mapping'
+        end
+        # of context '#network_mapping'
 
-        it "passes preflight check regardless of power_state" do  # Arif: failing test
+        it "passes preflight check regardless of power_state" do
           src_vm_1.send(:power_state=, 'anything')
           expect { task_1.preflight_check }.not_to raise_error
         end
@@ -560,9 +561,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
             conversion_host.vddk_transport_supported = true
           end
 
-# =begin
-          # todo fixed this example
-          it "generates conversion options hash" do # Arif: failing test
+          it "generates conversion options hash" do
             expect(task_1.conversion_options).to eq(
               :vm_name             => src_vm_1.name,
               :transport_method    => 'vddk',
@@ -570,8 +569,6 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
               :vmware_uri          => "esx://esx_user@10.0.0.1/?no_verify=1",
               :vmware_password     => 'esx_passwd',
               :rhv_url             => "https://#{ems_redhat.hostname}/ovirt-engine/api",
-              # :rhv_cluster         => dst_cluster.name,
-              # :rhv_storage         => dst_storage.name,
               :rhv_cluster         => redhat_cluster.name,
               :rhv_storage         => dst_rh.name,
               :rhv_password        => dst_ems.authentication_password,
@@ -581,7 +578,6 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
               :insecure_connection => true
             )
           end
-# =end
           it_behaves_like "#run_conversion"
         end
 
@@ -590,15 +586,12 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
             conversion_host.vddk_transport_supported = false
             conversion_host.ssh_transport_supported = true
           end
-# =begin
-          # todo fix this example
-          it "generates conversion options hash" do # Arif: failing test
+
+          it "generates conversion options hash" do
             expect(task_1.conversion_options).to eq(
               :vm_name             => "ssh://root@10.0.0.1/vmfs/volumes/stockage%20r%C3%A9cent/#{src_vm_1.location}",
               :transport_method    => 'ssh',
               :rhv_url             => "https://#{ems_redhat.hostname}/ovirt-engine/api",
-              # :rhv_cluster         => dst_cluster.name,
-              # :rhv_storage         => dst_storage.name,
               :rhv_cluster         => redhat_cluster.name,
               :rhv_storage         => dst_rh.name,
               :rhv_password        => dst_ems.authentication_password,
@@ -608,15 +601,13 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
               :insecure_connection => true
             )
           end
-# =end
         end
       end # of 'destination is rhevm'
 
       context 'destination is openstack' do
         let(:dst_ems) { FactoryBot.create(:ems_openstack, :api_version => 'v3', :zone => FactoryBot.create(:zone)) }
-        let(:dst_cloud_tenant) { FactoryBot.create(:cloud_tenant, :name => 'fake tenant', :ext_management_system => dst_ems) } # Arif: barfing line
+        let(:dst_cloud_tenant) { FactoryBot.create(:cloud_tenant, :name => 'fake tenant', :ext_management_system => dst_ems) }
         let(:dst_host) { FactoryBot.build(:host_openstack_infra, :ems_cluster => dst_cloud_tenant) }
-        # let(:dst_cloud_volume_type) { FactoryBot.create(:cloud_volume_type) }
         let(:disk) { FactoryBot.create(:disk) }
         let(:dst_cloud_volume_type) { FactoryBot.create(:cloud_volume_openstack, :attachments => [disk], :cloud_tenant => dst_cloud_tenant) }
         let(:dst_cloud_network_1) { FactoryBot.create(:cloud_network, :cloud_tenant => dst_cloud_tenant) }
@@ -632,7 +623,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
         let(:test_lan_2) { FactoryBot.create(:transformation_mapping_item, :source => source_lan_2, :destination => dst_cloud_network_2) }
 
         let(:mapping) do
-          FactoryBot.create( # Arif: barfing line
+          FactoryBot.create(
             :transformation_mapping,
             :transformation_mapping_items => [ test_cluster, test_storage, test_lan_1, test_lan_2 ]
           )
@@ -642,12 +633,12 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           task_1.conversion_host = conversion_host
         end
 
-        it { expect(task_1.destination_cluster).to eq(dst_cloud_tenant) } # Arif: failing test
+        it { expect(task_1.destination_cluster).to eq(dst_cloud_tenant) }
 
         it_behaves_like "#virtv2v_disks"
 
         context "#network_mappings" do
-          it "generates network_mappings hash" do # Arif: failing test
+          it "generates network_mappings hash" do
             expect(task_1.network_mappings).to eq(
               [
                 { :source => source_lan_1.name, :destination => dst_cloud_network_1.ems_ref, :mac_address => src_nic_1.address, :ip_address => '10.0.1.1' },
@@ -657,7 +648,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           end
         end
 
-        it "fails preflight check if src is power off" do # Arif: failing test
+        it "fails preflight check if src is power off" do
           src_vm_1.send(:power_state=, 'off')
           expect { task_1.preflight_check }.to raise_error('OSP destination and source power_state is off')
         end
@@ -667,7 +658,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
             conversion_host.vddk_transport_supported = true
           end
 
-          it "generates conversion options hash" do # Arif: failing test
+          it "generates conversion options hash" do
             expect(task_1.conversion_options).to eq(
               :vm_name                    => src_vm_1.name,
               :transport_method           => 'vddk',
@@ -696,7 +687,8 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
               :network_mappings           => task_1.network_mappings
             )
           end
-        end # of context 'transport method is vddk'
+        end
+        # of context 'transport method is vddk'
 
         context "transport method is ssh" do
           before do
@@ -704,7 +696,7 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
             conversion_host.ssh_transport_supported = true
           end
 
-          it "generates conversion options hash" do # Arif: failing test
+          it "generates conversion options hash" do
             expect(task_1.conversion_options).to eq(
               :vm_name                    => "ssh://root@10.0.0.1/vmfs/volumes/stockage%20r%C3%A9cent/#{src_vm_1.location}",
               :transport_method           => 'ssh',
