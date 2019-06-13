@@ -91,3 +91,8 @@ bundler.d/*
 # yardoc
 /doc/
 .yardoc
+
+# Added by Arif
+.DS_Store
+spec/.DS_Store
+spec/models/newtest_by_arif.rb
