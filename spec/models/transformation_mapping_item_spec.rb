@@ -8,6 +8,9 @@ RSpec.describe TransformationMappingItem, :v2v do
   let(:ems_openstack) { FactoryBot.create(:ems_openstack) }
   let(:openstack_cluster) { FactoryBot.create(:ems_cluster_openstack, :ext_management_system => ems_openstack) }
 
+  # ---------------------------------------------------------------------------
+  # cluster validations
+  # ---------------------------------------------------------------------------
   context "source cluster validation" do
     let(:valid_mapping_item) do
       FactoryBot.create(:transformation_mapping_item, :source => vmware_cluster, :destination => openstack_cluster)
@@ -46,6 +49,9 @@ RSpec.describe TransformationMappingItem, :v2v do
     end
   end # of destination cluster validation
 
+  # ---------------------------------------------------------------------------
+  # datastore validations
+  # ---------------------------------------------------------------------------
   context "datastore validation" do
     let(:src_host) { FactoryBot.create(:host_vmware, :ems_cluster => vmware_cluster) }
     let(:src)      { FactoryBot.create(:storage_vmware, :hosts => [src_host]) }

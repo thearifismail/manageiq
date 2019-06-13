@@ -437,7 +437,6 @@ RSpec.describe ServiceTemplateTransformationPlanTask, :v2v do
           expect(task_1.source_ems).to eq(src_ems)
         end
 
-        # to todo : fix it.
         it 'find the destination ems based on mapping' do
           expect(task_1.destination_ems).to eq(ems_redhat)
         end
